@@ -1,0 +1,22 @@
+OASISFormat: 0.1
+Name: ocaml-crunchbase
+Version: 0.0.1
+LicenseFile: COPYING
+License: PROP
+Authors: William Le Ferrand
+BuildTools: ocamlbuild
+Plugins: DevFiles (0.2), META (0.2)
+Synopsis: Let's search crunchbase
+
+Library crunchbase
+  Path: lib
+  Modules: Crunchbase
+  BuildDepends: Unix, lwt, lwt.unix, str, cohttp, yojson, netstring
+
+Executable search
+  Path:         app
+  MainIs:       search.ml
+  Install:      false
+  ByteOpt: -thread
+  NativeOpt: -thread
+  BuildDepends: crunchbase, lwt, str, lwt.unix, Unix
