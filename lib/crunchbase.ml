@@ -3,6 +3,10 @@
 open Lwt 
 open Cohttp
 
+(* Some types ********************************************************************************************)
+
+type permalink = string 
+
 (* Search API ********************************************************************************************)
 
 exception Malformed 
@@ -10,11 +14,11 @@ exception Malformed
 type r =
     {
       name : string ; 
-      permalink : string ;
+      permalink : permalink ;
       crunchbase_url : string ; 
     }
       
-let base_url = "http://api.crunchbase.com/v/1/search.js"
+let search_base_url = "http://api.crunchbase.com/v/1/search.js"
 
 let result_of_json = function 
   | `Assoc
@@ -39,7 +43,7 @@ let search_result_of_string s =
          
 let search ?(page=1) query = 
   let params = Netencoding.Url.mk_url_encoded_parameters [ "page", string_of_int page ; "query", query ] in
-  let url = Printf.sprintf "%s?%s" base_url params in
+  let url = Printf.sprintf "%s?%s" search_base_url params in
   
   catch 
     (fun () -> 
@@ -52,5 +56,26 @@ let search ?(page=1) query =
       match e with 
         | Http_client.Http_error _ -> print_endline "Error" ; fail e
         | _ -> fail e) 
+
+(* Per-item get API ************************************************************************************)
+
+(* http://api.crunchbase.com/v/1/company/play-hard-sports.js *)
+
+let company_base_url = "http://api.crunchbase.com/v/1/company"
+
+let company permalink = 
+  let url = Printf.sprintf "%s/%s.js" company_base_url permalink in 
+  catch 
+    (fun () -> 
+      Http_client.get url 
+      >>= fun (_, s) -> 
+      let json = Yojson.Basic.from_string s in
+      let company = Company.of_json json in
+      return company)
+    (fun e -> 
+      match e with 
+        | Http_client.Http_error _ -> print_endline "Error" ; fail e
+        | _ -> fail e) 
+
 
 
