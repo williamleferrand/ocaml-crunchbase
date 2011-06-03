@@ -126,10 +126,6 @@ let select_company_from_file file filter =
     (fun permalink ->
       Lwt_pool.use pool (fun _ -> 
         catch 
-          (fun () -> company permalink
-                     >>= fun company -> 
-            match filter company with 
-                true -> Printf.printf "." ; flush stdout; return (Some company) 
-              | false -> return None)
-          (fun _ -> return None))) permalinks 
+          (fun () -> company permalink >>= filter)
+          (fun _ -> return ()))) permalinks 
       

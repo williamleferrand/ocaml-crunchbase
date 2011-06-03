@@ -62,15 +62,20 @@ let search query =
 
 (* Search with filters **)
 
-let filter1 company =
-  let open Company in 
-      match company.funding_rounds with 
-          [] -> false 
-        | _ -> true 
+let filter1 file = 
+  Lwt_io.open_file ~mode:Lwt_io.output file
+  >>= fun oc -> 
+  return (fun company ->
+      let open Company in
+          match company.funding_rounds with 
+              [] -> return ()
+            | _ -> Lwt_io.write_line oc company.name)
 
 let _ = 
   Lwt_main.run 
-    (Api.select_company_from_file Sys.argv.(1) filter1
+    (
+      filter1 Sys.argv.(2) 
+      >>= fun filter -> Api.select_company_from_file Sys.argv.(1) filter
      >>= fun l ->
      Printf.printf "%d companies match\n" (List.length l); 
      return ())
