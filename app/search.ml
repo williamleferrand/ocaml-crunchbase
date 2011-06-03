@@ -76,7 +76,7 @@ let filter1 file =
                 | true -> 
                   match company.funding_rounds with 
                       [] -> return ()
-                 | _ -> Lwt_io.write_line oc company.name)
+                 | _ -> Lwt_io.write_line oc company.permalink)
 
 let _ = 
   Lwt_main.run 
