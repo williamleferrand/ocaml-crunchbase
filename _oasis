@@ -10,7 +10,7 @@ Synopsis: Let's search crunchbase
 
 Library crunchbase
   Path: lib
-  Modules: Crunchbase
+  Modules: Api
   BuildDepends: Unix, lwt, lwt.unix, str, cohttp, yojson, netstring
 
 Executable search

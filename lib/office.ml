@@ -2,7 +2,7 @@ exception Malformed
 
 type t = 
     {
-      description : string ; 
+      description : string option ; 
       address1 : string ; 
       address2 : string ; 
       zip_code : string ; 
@@ -18,7 +18,7 @@ let of_json json =
   let open Util in 
       let values = read_json json in 
       {
-        description = get_string values "description" ; 
+        description = get_string_option values "description" ; 
         address1 = get_string values "address1" ;
         address2 = get_string values "address2" ;
         zip_code = get_string values "zip_code" ; 

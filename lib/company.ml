@@ -14,15 +14,15 @@ type t =
       category_code : string ; 
       number_of_employees : int option ; 
             
-      founded_year : string ; 
-      founded_month : string option ; 
-      founded_day : string option ; 
+      founded_year : int ; 
+      founded_month : int option ; 
+      founded_day : int option ; 
 
       tag_list : string list ; 
       email_address : string ;
       phone_number : string ; 
 
-      description : string ; 
+      description : string option ; 
       overview : string ; (* utf8 encoded, remember *)
       
       competitions : Competition.t list ;
@@ -51,15 +51,15 @@ let of_json json =
         category_code = get_string values "category_code" ;
         number_of_employees = get_int_option values "number_of_employees" ;
         
-        founded_year = get_string values "founded_year" ;
-        founded_month = get_string_option values "founded_month" ; 
-        founded_day = get_string_option values "founded_day" ;
+        founded_year = get_int values "founded_year" ;
+        founded_month = get_int_option values "founded_month" ; 
+        founded_day = get_int_option values "founded_day" ;
 
-        tag_list = get_string_list values "tag_list" ;
+        tag_list = get_string_list' values "tag_list" ;
         email_address = get_string values "email_address" ; 
         phone_number = get_string values "phone_number" ; 
 
-        description = get_string values "description" ; 
+        description = get_string_option values "description" ; 
         overview = get_string values "overview" ; 
 
         competitions = get_raw_list values Competition.of_json "competitions" ; 

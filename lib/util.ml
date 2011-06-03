@@ -17,7 +17,7 @@ let get_string values name =
 
 let get_string_option values name = 
   try 
-   match Hashtbl.find values name with 
+    match Hashtbl.find values name with 
       | `String s -> Some s 
       | _ -> None
   with Not_found -> None
@@ -33,6 +33,15 @@ let get_string_list values name =
   try
     match Hashtbl.find values name with 
       | `List l -> List.map (function `String s -> s | _ -> raise (Missing name)) l
+      | _ -> raise (Missing name)
+  with Not_found -> raise (Missing name)
+
+let comma = Str.regexp "[ \t]+"
+
+let get_string_list' values name = 
+  try
+    match Hashtbl.find values name with 
+      | `String s -> Str.split comma s
       | _ -> raise (Missing name)
   with Not_found -> raise (Missing name)
 
