@@ -11,7 +11,7 @@ Synopsis: Let's search crunchbase
 Library crunchbase
   Path: lib
   Modules: Api
-  BuildDepends: Unix, lwt, lwt.unix, str, cohttp, yojson, netstring
+  BuildDepends: Unix, lwt, lwt.unix, str, cohttp, yojson, netstring, ulex
 
 Executable search
   Path:         app
@@ -20,4 +20,4 @@ Executable search
   Install:      false
   ByteOpt: -thread
   NativeOpt: -thread
-  BuildDepends: crunchbase, lwt, str, lwt.unix, Unix
+  BuildDepends: crunchbase, lwt, str, lwt.unix, Unix, ulex

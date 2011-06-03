@@ -74,19 +74,22 @@ let search ?(page=1) query =
 
 let company_base_url = "http://api.crunchbase.com/v/1/company"
 
-let company permalink = 
-  let url = Printf.sprintf "%s/%s.js" company_base_url permalink in 
+let rec company ?location permalink = 
+  let url = match location with Some url -> url | None -> Printf.sprintf "%s/%s.js" company_base_url permalink in 
   catch 
     (fun () -> 
       Http_client.get url 
       >>= fun (_, s) -> 
-      print_endline s; 
       let json = Yojson.Basic.from_string s in
       let company = Company.of_json json in
       return company)
     (fun e -> 
       match e with 
-        | Http_client.Http_error _ -> print_endline "Error" ; fail e
+        | Http_client.Http_error (302, headers, _)  -> 
+          let location = List.assoc "location" headers in 
+          Printf.printf "o(%s)" permalink ; flush stdout ;
+          company ~location permalink
+        | Http_client.Http_error (_)  -> print_endline "Error" ; fail e
         | _ -> fail e) 
 
 
@@ -95,25 +98,38 @@ let company permalink =
 
 let select_company_url = "http://api.crunchbase.com/v/1/companies.js"
 
-let permalinks_of_json = function 
-  | `List l -> 
-    List.map 
-      (function 
-      `Assoc [ "name" , `String name ; 
-                   "permalink", `String permalink ] -> permalink 
-        | _ -> raise Util.Malformed) l
-  | _ -> raise Util.Malformed
+let pool = Lwt_pool.create 100 (fun () -> return ())
+
+(* Ok we need a nicer way to read the string .. *)
+
+let rec read_permalinks acc = lexer 
+  | "permalink\": \"" ->  read_permalink acc lexbuf
+  | eof | "" -> acc
+  | _ -> read_permalinks acc lexbuf
+
+and read_permalink acc = lexer 
+    | [ 'a' - 'z' '-' '0' - '9' ]+ -> read_permalinks ((Ulexing.utf8_lexeme lexbuf) :: acc) lexbuf
 
 let select_company filter = 
   Http_client.get select_company_url 
   >>= fun (_, s) -> 
-  let json = Yojson.Basic.from_string s in
-  let permalinks = permalinks_of_json json in
+  print_endline "we have the list"; 
+  let permalinks = read_permalinks [] (Ulexing.from_utf8_string s) in 
+  return permalinks
+
+let select_company_from_file file filter = 
+  let ic = open_in file in
+  let lexbuf = Ulexing.from_utf8_channel ic in
+  let permalinks = read_permalinks [] lexbuf in 
+  close_in ic ; 
   Lwt_list.map_p
     (fun permalink ->
-      company permalink
-      >>= fun company -> 
-      match filter company with 
-          true -> return (Some company) 
-        | false -> return None) permalinks 
+      Lwt_pool.use pool (fun _ -> 
+        catch 
+          (fun () -> company permalink
+                     >>= fun company -> 
+            match filter company with 
+                true -> Printf.printf "." ; flush stdout; return (Some company) 
+              | false -> return None)
+          (fun _ -> return None))) permalinks 
       

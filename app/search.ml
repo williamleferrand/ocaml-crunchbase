@@ -70,8 +70,9 @@ let filter1 company =
 
 let _ = 
   Lwt_main.run 
-    (Api.select_company filter1
+    (Api.select_company_from_file Sys.argv.(1) filter1
      >>= fun l ->
      Printf.printf "%d companies match\n" (List.length l); 
      return ())
-     
+
+    
