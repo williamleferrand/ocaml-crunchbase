@@ -16,6 +16,7 @@ Library crunchbase
 Executable search
   Path:         app
   MainIs:       search.ml
+  CompiledObject: best
   Install:      false
   ByteOpt: -thread
   NativeOpt: -thread

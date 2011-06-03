@@ -6,7 +6,10 @@ let read_json = function
     let values = Hashtbl.create 0 in
     List.iter (fun (n, v) -> Hashtbl.add values n v) l ; 
     values 
-  | _ -> raise Malformed 
+  | `Null -> raise End_of_file
+  | j ->  
+    print_endline (Yojson.Basic.to_string j); 
+    failwith "panic in read_json"
 
 let get_string values name = 
   try
@@ -29,6 +32,13 @@ let get_float values name =
       | _ -> raise (Missing name)
   with Not_found -> raise (Missing name)
 
+let get_float_option values name = 
+  try
+    match Hashtbl.find values name with 
+      | `Float f -> Some f 
+      | _ -> None
+  with Not_found -> None
+
 let get_string_list values name = 
   try
     match Hashtbl.find values name with 
@@ -44,6 +54,13 @@ let get_string_list' values name =
       | `String s -> Str.split comma s
       | _ -> raise (Missing name)
   with Not_found -> raise (Missing name)
+
+let get_string_list_option' values name = 
+  try
+    match Hashtbl.find values name with 
+      | `String s -> Some (Str.split comma s)
+      | _ -> None
+  with Not_found -> None
 
 (* raw getters *)
 
