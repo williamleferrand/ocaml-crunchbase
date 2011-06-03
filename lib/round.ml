@@ -25,3 +25,21 @@ let of_json json =
         funded_day = get_int_option values "funded_day" ;
         investments = get_raw_list values Investment.of_json "investments"
       }
+
+
+let sp = function Some s -> s | None -> "" 
+let spi = function Some i -> string_of_int i | None -> "" 
+let spf = function Some i -> string_of_float i | None -> "" 
+let spl = function Some l -> String.concat " " l | None -> "" 
+
+let to_csv t = 
+  Printf.sprintf "%s, %s, %s, %s, %s, %s, %s, %s"
+    (sp t.round_code)
+    (sp t.source_url)
+    (sp t.source_description)
+    (spf t.raised_amount)
+    (sp t.raised_currency_code)
+    (spi t.funded_year)
+    (spi t.funded_month)
+    (spi t.funded_day)
+
