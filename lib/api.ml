@@ -90,7 +90,7 @@ let rec company ?location permalink =
           Printf.printf "o(%s)" permalink ; flush stdout ;
           company ~location permalink
         | Http_client.Http_error (_)  -> Printf.printf "e";  fail e
-        | _ -> fail e) 
+        | _ -> Printf.printf "%s" (Printexc.to_string e) ;  fail e) 
 
 
 
