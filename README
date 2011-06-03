@@ -1,0 +1,9 @@
+OCaml-crunchbase
+================
+
+3/06/2011
+
+Simple lib to perform arbitratry requests on crunchbase. Might not be complete, but at least
+it gives an ocaml representation of companies. 
+
+Not very slow of course as you need to retrieve *a lot* of data from crunchbase.

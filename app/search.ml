@@ -66,10 +66,17 @@ let filter1 file =
   Lwt_io.open_file ~mode:Lwt_io.output file
   >>= fun oc -> 
   return (fun company ->
+    Printf.printf "." ; flush stdout ; 
       let open Company in
-          match company.funding_rounds with 
-              [] -> return ()
-            | _ -> Lwt_io.write_line oc company.name)
+          match company.tag_list with 
+              None -> return () 
+            | Some tags -> 
+              match List.mem "sport" tags || List.mem "sports" tags with
+                  false -> return ()
+                | true -> 
+                  match company.funding_rounds with 
+                      [] -> return ()
+                 | _ -> Lwt_io.write_line oc company.name)
 
 let _ = 
   Lwt_main.run 

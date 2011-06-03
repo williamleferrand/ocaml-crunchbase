@@ -65,7 +65,7 @@ let search ?(page=1) query =
       return results)
     (fun e ->
       match e with 
-        | Http_client.Http_error _ -> print_endline "Error" ; fail e
+        | Http_client.Http_error _ -> Printf.printf "e" ; fail e
         | _ -> fail e) 
 
 (* Per-item get API ************************************************************************************)
@@ -89,7 +89,7 @@ let rec company ?location permalink =
           let location = List.assoc "location" headers in 
           Printf.printf "o(%s)" permalink ; flush stdout ;
           company ~location permalink
-        | Http_client.Http_error (_)  -> print_endline "Error" ; fail e
+        | Http_client.Http_error (_)  -> Printf.printf "e";  fail e
         | _ -> fail e) 
 
 
