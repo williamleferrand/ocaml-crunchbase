@@ -46,7 +46,7 @@ let get_string_list values name =
       | _ -> raise (Missing name)
   with Not_found -> raise (Missing name)
 
-let comma = Str.regexp "[ \t]+"
+let comma = Str.regexp "[ , \t]+"
 
 let get_string_list' values name = 
   try
