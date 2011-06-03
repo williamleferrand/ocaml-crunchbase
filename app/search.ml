@@ -97,7 +97,7 @@ let filter2 file =
 let _ = 
   Lwt_main.run 
     (
-      filter1 Sys.argv.(2) 
+      filter2 Sys.argv.(2) 
       >>= fun filter -> Api.select_company_from_file Sys.argv.(1) filter
      >>= fun l ->
      Printf.printf "%d companies match\n" (List.length l); 
